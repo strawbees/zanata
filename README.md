@@ -32,6 +32,22 @@ On Elastic Beanstalk create an enviroment with the following properties:
 - Preconfigured platform: Multi-container Docker
 - Upload you code: Select the `Dockerrun.aws.json`
 - Instances: At least a `t2.small`
-- EC2 security group: Open the inbout ports for `HTTP` (port `443`) and `MySQL` (port `3306`)
+- EC2 security group: Open the inbout ports for `HTTP` (port `80`), `HTTPS` (port `443`) and `MySQL` (port `3306`)
 
 The `Dockerrun.aws.json` should be uploaded and deployed. You can do it through the "Application Versions page" or through the button "upload and deploy" on the environment's dashboard.
+
+Once the application is deployed for the first time, there will be no users and no way to login. To enable login you must run an SQL query manually on the database (that is why it's important to open the inbound port `3306`). The [example SQL query](https://github.com/zanata/zanata-docker-files/blob/master/zanata-server/conf/admin-user-setup.sql) can be found at the [`zanata-docker-files`](https://github.com/zanata/zanata-docker-files).
+
+Check [MySQL Workbench](https://www.mysql.com/products/workbench/) or any other client compatible with `MariaDB` to run the query. Make sure the first thing you do is to login with the administrator credentials and change the default password.
+
+```sql
+-- Username: admin
+-- Password: admin1234
+INSERT INTO HAccount (id, creationDate, lastChanged, versionNum, enabled, passwordHash, username)
+VALUES (1, now(), now(), 1, 1, 'UZMf4PIqtTBGAo9wWKuTpg==', 'admin');
+
+INSERT INTO HPerson (id, creationDate, lastChanged, versionNum, email, `name`, accountId)
+VALUES (1, now(), now(), 1, 'admin@noreply.org', 'Administrator', 1);
+
+INSERT INTO HAccountMembership(accountId, memberOf) VALUES (1, 5);
+```
