@@ -1,25 +1,33 @@
 {
 	"AWSEBDockerrunVersion": 2,
-	"volumes": [
-		{
-			"name": "zanata-files",
-			"host": {
-				"sourcePath": "/var/lib/zanata"
-			}
-		},
-		{
-			"name": "zanata-db",
-			"host": {
-				"sourcePath": "/var/lib/mysql"
-			}
-		}
-	],
 	"containerDefinitions": [
 		{
-			"name": "zanata-server",
-			"image": "zanata/server",
+			"name": "zanatadb",
+			"hostname": "zanatadb",
+			"image": "mariadb:10.1",
 			"essential": true,
-			"memory": 128,
+			"memoryReservation": 200,
+			"portMappings": [
+				{
+					"hostPort": 3306,
+					"containerPort": 3306
+				}
+			],
+			"healthCheck": {
+				"command": ["CMD", "mysqladmin", "ping", "--silent"]
+			},
+			"environment": [
+				{ "name": "MYSQL_RANDOM_ROOT_PASSWORD", "value": "yes"},
+				{ "name": "MYSQL_USER", "value": "xxx"},
+				{ "name": "MYSQL_PASSWORD", "value": "yyy"},
+				{ "name": "MYSQL_DATABASE", "value": "zanata"}
+			]
+		},
+		{
+			"name": "zanata-server",
+			"image": "zanata/server:latest",
+			"essential": true,
+			"memoryReservation": 500,
 			"portMappings": [
 				{
 					"hostPort": 80,
@@ -29,36 +37,20 @@
 			"environment": [
 				{ "name": "ZANATA_HOME", "value": "/var/lib/zanata"},
 				{ "name": "DB_HOSTNAME", "value": "zanatadb"},
-				{ "name": "DB_SCHEMA", "value": "XXX"},
-				{ "name": "DB_USERNAME", "value": "XXX"},
-				{ "name": "DB_PASSWORD", "value": "XXX"},
+				{ "name": "DB_SCHEMA", "value": "zanata"},
+				{ "name": "DB_USERNAME", "value": "xxx"},
+				{ "name": "DB_PASSWORD", "value": "yyy"},
 				{ "name": "DB_PORTNUMBER", "value": "3306"},
-				{ "name": "MAIL_HOST", "value": "XXX"},
-				{ "name": "MAIL_PORT", "value": "XXX"},
-				{ "name": "MAIL_USERNAME", "value": "XXX"},
-				{ "name": "MAIL_PASSWORD", "value": "XXX"},
+				{ "name": "MAIL_HOST", "value": "zzz"},
+				{ "name": "MAIL_PORT", "value": "aaa"},
+				{ "name": "MAIL_USERNAME", "value": "sss"},
+				{ "name": "MAIL_PASSWORD", "value": "ddd"},
 				{ "name": "MAIL_TLS", "value": "false"},
 				{ "name": "MAIL_SSL", "value": "false"}
 			],
 			"links": [
-				"zanata-db"
-			],
-			"mountPoints": []
-		},
-		{
-			"name": "zanata-db",
-			"image": "mariadb:10.1",
-			"essential": true,
-			"memory": 128,
-			"environment": [
-				{ "name": "MYSQL_RANDOM_ROOT_PASSWORD", "value": "yes"},
-				{ "name": "MYSQL_USER", "value": "XXX"},
-				{ "name": "MYSQL_PASSWORD", "value": "XXX"},
-				{ "name": "MYSQL_DATABASE", "value": "XXX"},
-			],
-			"links": [],
-			"mountPoints": []
+				"zanatadb"
+			]
 		}
-
 	]
 }

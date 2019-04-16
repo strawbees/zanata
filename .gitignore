@@ -1,2 +1,3 @@
 .DS_Store
 Dockerrun.aws.json
+.env

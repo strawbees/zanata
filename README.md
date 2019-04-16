@@ -24,4 +24,14 @@ This will spawn 2 docker instances: One for the database and other for the Zanat
 
 ## Deploying
 
-We'll use Amazon Elastic Beanstalk to deploy this in production and we must translate the `docker-compose.yml` from `zanata-docker-files` to a `Dockerrun.aws.json`. It's important that the `Dockerrun.aws.json` is the "version 2" as this setup will require a [Multicontainer Docker Configuration](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_v2config.html).
+We'll use Amazon Elastic Beanstalk to deploy this in production and we must translate the `docker-compose.yml` from `zanata-docker-files` to a `Dockerrun.aws.json`. You can use the `Dockerrun_template.aws.json` as reference to create a new one. It's important that the `Dockerrun.aws.json` is the "version 2" as this setup will require a [Multicontainer Docker Configuration](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker_v2config.html).
+
+On Elastic Beanstalk create an enviroment with the following properties:
+
+- Web server environment
+- Preconfigured platform: Multi-container Docker
+- Upload you code: Select the `Dockerrun.aws.json`
+- Instances: At least a `t2.small`
+- EC2 security group: Open the inbout ports for `HTTP` (port `443`) and `MySQL` (port `3306`)
+
+The `Dockerrun.aws.json` should be uploaded and deployed. You can do it through the "Application Versions page" or through the button "upload and deploy" on the environment's dashboard.
